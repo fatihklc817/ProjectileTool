@@ -73,3 +73,10 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# JetBrains Rider ve RiderLink için
+.idea/
+Plugins/Developer/RiderLink/
+
+# Alternatif olarak, eğer RiderLink herhangi bir yerde bulunuyorsa hariç tutmak için:
+**/RiderLink/
