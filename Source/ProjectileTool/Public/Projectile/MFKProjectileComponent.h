@@ -9,6 +9,16 @@
 
 class UPrimitiveComponent;
 
+/** Serbest ucus sirasinda izlenecek path tipi. */
+UENUM(BlueprintType)
+enum class EProjectilePathMode : uint8
+{
+	None    UMETA(DisplayName = "None (Straight)"),
+	Sine    UMETA(DisplayName = "Sine (Wave)"),
+	Zigzag  UMETA(DisplayName = "Zigzag"),
+	Spiral  UMETA(DisplayName = "Spiral")
+};
+
 /** Tick guncelleme sikligi: 60 Hz+ akici hareket, dusuk degerler takilma yapar. */
 UENUM(BlueprintType)
 enum class EProjectileTickRatePreset : uint8
@@ -47,6 +57,32 @@ public:
 	/** Root primitive'in MoveIgnoreActors'ina Owner/Instigator eklenir; ates eden vurulmaz. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Movement")
 	bool bIgnoreOwnerWhenMoving = true;
+
+	// --- Path (serbest ucus sekli) ---
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path")
+	EProjectilePathMode PathMode = EProjectilePathMode::None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Sine", ClampMin = "0"))
+	float SineAmplitude = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Sine", ClampMin = "0"))
+	float SineFrequency = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Zigzag", ClampMin = "0"))
+	float ZigzagAmplitude = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Zigzag", ClampMin = "0"))
+	float ZigzagFrequency = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Spiral", ClampMin = "0"))
+	float SpiralRadius = 80.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Spiral", ClampMin = "0"))
+	float SpiralFrequency = 1.f;
+
+	/** Her frame hareket yonune bakacak sekilde rotasyonu guncelle (path/sine ile daha dogal gorunur). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path")
+	bool bOrientToVelocity = false;
 
 	// --- Performance ---
 	/** Tick guncelleme sikligi: Low = 60 Hz, Medium = 120 Hz, Max = her frame. */
@@ -101,6 +137,8 @@ protected:
 	void ApplyTickRatePreset();
 	void SetupMoveIgnoreActors();
 	void BindToRootComponentHit();
+	void GetPerpendicularAxes(FVector& OutRight, FVector& OutUp) const;
+	FVector ComputeMovementDelta(float DeltaTime, float ElapsedTime) const;
 
 	UFUNCTION()
 	void OnRootComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

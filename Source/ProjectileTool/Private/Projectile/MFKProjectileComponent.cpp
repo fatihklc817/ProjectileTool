@@ -78,6 +78,65 @@ void UMFKProjectileComponent::OnRootComponentHit(UPrimitiveComponent* HitCompone
 }
 
 
+void UMFKProjectileComponent::GetPerpendicularAxes(FVector& OutRight, FVector& OutUp) const
+{
+	const FVector Forward = CachedMovementDirection;
+	OutRight = FVector::CrossProduct(Forward, FVector::UpVector);
+	if (OutRight.SizeSquared() < UE_KINDA_SMALL_NUMBER * UE_KINDA_SMALL_NUMBER)
+	{
+		OutRight = FVector::CrossProduct(Forward, FVector::RightVector).GetSafeNormal();
+	}
+	else
+	{
+		OutRight.Normalize();
+	}
+	OutUp = FVector::CrossProduct(OutRight, Forward).GetSafeNormal();
+}
+
+
+FVector UMFKProjectileComponent::ComputeMovementDelta(float DeltaTime, float ElapsedTime) const
+{
+	const FVector Forward = CachedMovementDirection;
+	const float ForwardDist = Speed * DeltaTime;
+
+	switch (PathMode)
+	{
+	case EProjectilePathMode::None:
+		return Forward * ForwardDist;
+
+	case EProjectilePathMode::Sine:
+	{
+		FVector Right, Up;
+		GetPerpendicularAxes(Right, Up);
+		const float Angle = 2.f * UE_PI * SineFrequency * ElapsedTime;
+		const FVector LateralVelocity = SineAmplitude * 2.f * UE_PI * SineFrequency * FMath::Cos(Angle) * Right;
+		return Forward * ForwardDist + LateralVelocity * DeltaTime;
+	}
+	case EProjectilePathMode::Zigzag:
+	{
+		FVector Right, Up;
+		GetPerpendicularAxes(Right, Up);
+		const float Period = (ZigzagFrequency > 0.f) ? (1.f / ZigzagFrequency) : 1.f;
+		const float Phase = FMath::Fmod(ElapsedTime, Period) / Period;
+		const float Sign = (Phase < 0.5f) ? 1.f : -1.f;
+		const FVector LateralVelocity = Sign * (4.f * ZigzagAmplitude * ZigzagFrequency) * Right;
+		return Forward * ForwardDist + LateralVelocity * DeltaTime;
+	}
+	case EProjectilePathMode::Spiral:
+	{
+		FVector Right, Up;
+		GetPerpendicularAxes(Right, Up);
+		const float Angle = 2.f * UE_PI * SpiralFrequency * ElapsedTime;
+		const FVector LateralVelocity = SpiralRadius * 2.f * UE_PI * SpiralFrequency *
+			(-FMath::Sin(Angle) * Right + FMath::Cos(Angle) * Up);
+		return Forward * ForwardDist + LateralVelocity * DeltaTime;
+	}
+	default:
+		return Forward * ForwardDist;
+	}
+}
+
+
 void UMFKProjectileComponent::SetupMoveIgnoreActors()
 {
 	if (!bIgnoreOwnerWhenMoving) return;
@@ -123,8 +182,9 @@ void UMFKProjectileComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		return;
 	}
 
-	// Movement delta
-	const FVector Delta = CachedMovementDirection * Speed * DeltaTime;
+	// Movement delta (path modu: None / Sine / Zigzag / Spiral)
+	const float ElapsedTime = CurrentTime - SpawnTime;
+	const FVector Delta = ComputeMovementDelta(DeltaTime, ElapsedTime);
 	const FVector NewLoc = CurrentLoc + Delta;
 
 	// Max range check (after move)
@@ -151,9 +211,20 @@ void UMFKProjectileComponent::TickComponent(float DeltaTime, ELevelTick TickType
 			SetComponentTickEnabled(false);
 			return;
 		}
-		if (bMoved) return;
+		if (bMoved)
+		{
+			if (bOrientToVelocity && Delta.SizeSquared() > UE_KINDA_SMALL_NUMBER * UE_KINDA_SMALL_NUMBER)
+			{
+				OwnerActor->SetActorRotation(FRotationMatrix::MakeFromX(Delta).ToQuat());
+			}
+			return;
+		}
 	}
 
 	OwnerActor->SetActorLocation(NewLoc);
+	if (bOrientToVelocity && Delta.SizeSquared() > UE_KINDA_SMALL_NUMBER * UE_KINDA_SMALL_NUMBER)
+	{
+		OwnerActor->SetActorRotation(FRotationMatrix::MakeFromX(Delta).ToQuat());
+	}
 }
 
