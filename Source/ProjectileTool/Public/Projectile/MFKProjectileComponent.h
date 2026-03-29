@@ -8,6 +8,7 @@
 #include "MFKProjectileComponent.generated.h"
 
 class UPrimitiveComponent;
+class UWorld;
 
 /** Path mode used during free-flight movement. */
 UENUM(BlueprintType)
@@ -70,61 +71,61 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path")
 	EProjectilePathMode PathMode = EProjectilePathMode::None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Sine", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Sine", EditConditionHides, ClampMin = "0"))
 	float SineAmplitude = 100.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Sine", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Sine", EditConditionHides, ClampMin = "0"))
 	float SineFrequency = 2.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Zigzag", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Zigzag", EditConditionHides, ClampMin = "0"))
 	float ZigzagAmplitude = 100.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Zigzag", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Zigzag", EditConditionHides, ClampMin = "0"))
 	float ZigzagFrequency = 2.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Spiral", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Spiral", EditConditionHides, ClampMin = "0"))
 	float SpiralRadius = 80.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Spiral", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Spiral", EditConditionHides, ClampMin = "0"))
 	float SpiralFrequency = 1.f;
 
 	/** Vertical 360: Duration of one 360-degree flip (seconds). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", ClampMin = "0.01"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", EditConditionHides, ClampMin = "0.01"))
 	float Vertical360DurationSec = 0.5f;
 
 	/** Vertical 360:
 	 *  - Delays the first flip by Vertical360IntervalSec.
 	 *  - After each flip, waits the same duration before starting another (cooldown).
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", ClampMin = "0.01"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", EditConditionHides, ClampMin = "0.01"))
 	float Vertical360IntervalSec = 1.0f;
 
 	/** Total Vertical 360 flip count. 0 = infinite, 1 = single flip only. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", EditConditionHides, ClampMin = "0"))
 	int32 Vertical360FlipCount = 0;
 
 	/** Vertical 360 easing type (reduces abrupt start/stop feel). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", EditConditionHides))
 	EVertical360EaseType Vertical360EaseType = EVertical360EaseType::SmoothStep;
 
 	/** Slightly wobble flip axis during Vertical 360 (less robotic motion). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360", EditConditionHides))
 	bool bVertical360WobbleEnabled = true;
 
 	/** Wobble amplitude (degrees). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled", EditConditionHides, ClampMin = "0"))
 	float Vertical360WobbleAmplitudeDeg = 10.f;
 
 	/** Number of wobble cycles during one flip. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled", ClampMin = "0.01"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled", EditConditionHides, ClampMin = "0.01"))
 	float Vertical360WobbleCyclesPerTurn = 1.f;
 
 	/** Randomize wobble per projectile (phase + slight amplitude variation). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled", EditConditionHides))
 	bool bVertical360RandomizeWobblePerProjectile = true;
 
 	/** Randomize wobble per flip cycle as well (each cycle feels different). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Path", meta = (EditCondition = "PathMode == EProjectilePathMode::Vertical360 && bVertical360WobbleEnabled", EditConditionHides))
 	bool bVertical360RandomizeWobblePerFlip = true;
 
 	/** Update actor rotation toward movement direction every frame. */
@@ -137,20 +138,101 @@ public:
 	bool bEnableMicroWobble = false;
 
 	/** Maximum micro wobble angular amplitude (degrees). Keep small values for realism. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", EditConditionHides, ClampMin = "0"))
 	float MicroWobbleAmplitudeDeg = 1.0f;
 
 	/** Micro wobble oscillation frequency (Hz). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", EditConditionHides, ClampMin = "0"))
 	float MicroWobbleFrequencyHz = 3.0f;
 
 	/** Blend-in time to avoid sudden wobble at spawn (seconds). */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", EditConditionHides, ClampMin = "0"))
 	float MicroWobbleBlendInSec = 0.2f;
 
 	/** Randomize micro wobble phase per projectile so shots do not look identical. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble", EditConditionHides))
 	bool bRandomizeMicroWobblePerProjectile = true;
+
+	/** When homing is enabled, amplitude is multiplied by this (e.g. 0.15 = 15% of Micro Wobble Amplitude). 1 = no reduction. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|MicroWobble", meta = (EditCondition = "bEnableMicroWobble && bEnableHoming", EditConditionHides, ClampMin = "0", ClampMax = "1"))
+	float MicroWobbleScaleWhenHoming = 0.15f;
+
+	// --- Homing (applies to all path modes) ---
+	/** Enable homing toward target (actor or world location). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing")
+	bool bEnableHoming = false;
+
+	/** Target actor to home toward. Can be set in editor or at runtime. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides))
+	TObjectPtr<AActor> HomingTargetActor = nullptr;
+
+	/** If set, component finds target by this tag in BeginPlay (avoids Level BP reference issues). Overrides HomingTargetActor when resolved. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides))
+	FName HomingTargetTag;
+
+	/**
+	 * Maximum turn rate toward the aim point (deg/s). Actual rate per shot is HomingTurnRateDegPerSec * HomingTurnRateEffectiveScale (scale rolled at spawn from Homing Full Turn Rate Chance).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0"))
+	float HomingTurnRateDegPerSec = 180.f;
+
+	/** Delay before homing starts (seconds). During delay: straight line along spawn forward, no micro-wobble (Path None). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0"))
+	float HomingAcquisitionDelaySec = 0.f;
+
+	/**
+	 * Path modes + homing: when distance to target is above this (uu), pattern runs in a target-aimed frame.
+	 * When at or below this distance, path wobble stops and flight uses the current heading from the prior frame, steered toward the aim point by Homing Turn Rate (same as None homing), not an instant snap to target.
+	 * 0 = never enter this terminal chase (pattern stays on until impact).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0"))
+	float HomingPathTerminalDirectDistance = 300.f;
+
+	/**
+	 * 0–1: at spawn, probability this projectile uses the full Homing Turn Rate (scale = 1).
+	 * Otherwise Homing Turn Rate is multiplied by Homing Reduced Turn Rate Scale for the whole flight (weaker tracking, still homes).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0", ClampMax = "1"))
+	float HomingFullTurnRateChance = 1.f;
+
+	/**
+	 * When the full-turn-rate roll fails, turn rate scale is picked uniformly in [Min, Max] (0–1 each).
+	 * If Min > Max in the editor, they are swapped at runtime.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0", ClampMax = "1"))
+	float HomingReducedTurnRateScaleMin = 0.15f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0", ClampMax = "1"))
+	float HomingReducedTurnRateScaleMax = 0.45f;
+
+	/**
+	 * Radius (uu) of the error circle on the plane perpendicular to the projectile→target line at lock. One random point on that circle becomes the ghost aim.
+	 * 0 = perfect lock on true target. Larger = further possible miss (still depends on turn rate, speed, motion).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides, ClampMin = "0"))
+	float HomingAccuracyRadius = 0.f;
+
+	/** Draw the accuracy circle (cyan) and chosen ghost point (yellow) in the editor/game view — for tuning only. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides))
+	bool bDrawDebugHomingGhost = false;
+
+	/**
+	 * When true, if the target lies behind the current flight direction (miss / overshoot), homing stops for this projectile.
+	 * Movement coasts along the integrated velocity direction (+ micro wobble) instead of turning back toward the target.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides))
+	bool bHomingAbortWhenPastTarget = true;
+
+	/**
+	 * Abort when Dot(flightDir, toTarget) <= this (flightDir = last-frame velocity from HomingIntegratedForward; toTarget toward target).
+	 * 0 = not in front hemisphere (side pass at 90° or behind). Negative (e.g. -0.15) = require a clearer overshoot. Positive = abort earlier while target is still slightly ahead.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming && bHomingAbortWhenPastTarget", EditConditionHides))
+	float HomingPastTargetDotThreshold = 0.f;
+
+	/** When true, logs homing state to Output Log (for debugging). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Homing", meta = (EditCondition = "bEnableHoming", EditConditionHides))
+	bool bHomingDebugLog = false;
 
 	// --- Performance ---
 	/** Tick update frequency: Low = 60 Hz, Medium = 120 Hz, Max = every frame. */
@@ -179,12 +261,35 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Projectile|Events")
 	FOnProjectileMaxRangeReachedSignature OnProjectileMaxRangeReached;
 
+	/** Set homing target to an actor. Clears world location target. */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Projectile|Homing")
+	void SetHomingTarget(AActor* InTarget);
+
+	/** Set homing target to a world location. Clears actor target. */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Projectile|Homing")
+	void SetHomingTargetWorldLocation(const FVector& WorldLocation);
+
+	/** Clear homing target (actor and world location). */
+	UFUNCTION(BlueprintCallable, Category = "Projectile|Homing")
+	void ClearHomingTarget();
+
+	/** Find first actor with given tag in level and set as homing target. Use when level references fail in PIE. */
+	UFUNCTION(BlueprintCallable, Category = "Projectile|Homing", meta = (DisplayName = "Set Homing Target By Tag"))
+	void SetHomingTargetByTag(FName Tag);
+
 protected:
 	virtual void BeginPlay() override;
 
 	/** Forward direction captured at spawn; movement uses this direction. */
 	UPROPERTY()
 	FVector CachedMovementDirection;
+
+	/** Right/up basis from CachedMovementDirection (computed once in BeginPlay; same as GetPerpendicularAxes). */
+	UPROPERTY()
+	FVector CachedRight;
+
+	UPROPERTY()
+	FVector CachedUp;
 
 	/** Spawn location (used for max range calculation). */
 	UPROPERTY()
@@ -218,12 +323,135 @@ protected:
 	UPROPERTY()
 	float MicroWobbleRandomPhaseB = 0.f;
 
+	/** Vertical 360: cached from duration/interval at BeginPlay (avoids per-tick adds/divs). */
+	UPROPERTY()
+	float Vertical360CachedFirstDelay = 0.f;
+
+	UPROPERTY()
+	float Vertical360CachedCycleLength = 1.f;
+
+	UPROPERTY()
+	float Vertical360CachedInvDuration = 1.f;
+
+	/** Duration of one flip (seconds), cached at BeginPlay. */
+	UPROPERTY()
+	float Vertical360CachedDurationSec = 0.5f;
+
+	/** True when Vertical360 interval/duration are valid (cached at BeginPlay). */
+	UPROPERTY()
+	bool bVertical360TimingValid = false;
+
+	/** Path math constants (BeginPlay). */
+	UPROPERTY()
+	float CachedSineTwoPiFreq = 0.f;
+
+	UPROPERTY()
+	float CachedZigzagPeriod = 1.f;
+
+	UPROPERTY()
+	float CachedZigzagLateralCoeff = 0.f;
+
+	UPROPERTY()
+	float CachedSpiralTwoPiFreq = 0.f;
+
+	UPROPERTY()
+	float CachedMicroWobbleTwoPiFreq = 0.f;
+
+	UPROPERTY()
+	bool bHasLifetimeLimit = false;
+
+	UPROPERTY()
+	float CachedExpiryTime = 0.f;
+
+	UPROPERTY()
+	bool bHasMaxRangeLimit = false;
+
+	UPROPERTY()
+	float CachedMaxRangeSq = 0.f;
+
+	UPROPERTY()
+	TObjectPtr<AActor> CachedOwnerActor = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UWorld> CachedWorld = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UPrimitiveComponent> CachedRootPrimitive = nullptr;
+
+	/** When true, use CachedHomingWorldLocation instead of HomingTargetActor. */
+	UPROPERTY()
+	bool bUseWorldLocationForHoming = false;
+
+	/** World location target set by SetHomingTargetWorldLocation. */
+	UPROPERTY()
+	FVector CachedHomingWorldLocation = FVector::ZeroVector;
+
+	/** World-space offset from true target to ghost aim (lies on circle of radius HomingAccuracyRadius in lock plane). */
+	UPROPERTY()
+	FVector HomingGhostWorldOffset = FVector::ZeroVector;
+
+	/** Orthonormal axes in the lock plane (perpendicular to LOS at acquisition) for circle + debug. */
+	UPROPERTY()
+	FVector HomingGhostBasisU = FVector::ZeroVector;
+
+	UPROPERTY()
+	FVector HomingGhostBasisV = FVector::ZeroVector;
+
+	/** True after HomingGhostWorldOffset is chosen for this shot. */
+	UPROPERTY()
+	bool bHomingGhostAimInitialized = false;
+
+	/** Set true when bHomingAbortWhenPastTarget detects an overshoot; homing steer disabled until respawn. */
+	UPROPERTY()
+	bool bHomingPastTargetAborted = false;
+
+	/** Per-shot multiplier on HomingTurnRateDegPerSec (1 = full, or random in reduced min–max range); set in BeginPlay. */
+	UPROPERTY()
+	float HomingTurnRateEffectiveScale = 1.f;
+
+	/** When homing + Path None: forward axis is last frame's movement (after homing), not spawn — so turns accumulate. */
+	UPROPERTY()
+	FVector HomingIntegratedForward = FVector::ForwardVector;
+
+	/** Resets each BeginPlay; used by homing debug logs (avoids static persisting across PIE runs). */
+	struct FHomingDebugOnce
+	{
+		bool bTickOwner = false;
+		bool bTryGetEntry = false;
+		bool bTryGetOkActor = false;
+		bool bTryGetWorldMismatch = false;
+		bool bTryGetWorldLoc = false;
+		bool bTryGetFailNoTarget = false;
+		bool bSkipEnable = false;
+		bool bSkipNoTarget = false;
+		bool bSkipAcquisition = false;
+		bool bSkipDeltaSmall = false;
+		bool bSkipToTargetZero = false;
+		bool bSkipTurnRate = false;
+		bool bSkipNewDirZero = false;
+		bool bTickDeltaDiff = false;
+		float LastOkLogTime = -999.f;
+	};
+	mutable FHomingDebugOnce HomingDbgOnce;
+
 	void ApplyTickRatePreset();
+	void UpdateVertical360Caches();
+	void UpdatePathModeCaches();
+	void UpdateLifetimeRangeCaches();
 	void SetupMoveIgnoreActors();
 	void BindToRootComponentHit();
 	void GetPerpendicularAxes(FVector& OutRight, FVector& OutUp) const;
-	FVector ComputeMovementDelta(float DeltaTime, float ElapsedTime) const;
+	static void GetPerpendicularAxesForDirection(const FVector& ForwardIn, FVector& OutRight, FVector& OutUp);
+	FVector ComputeMovementDelta(float DeltaTime, float ElapsedTime, const FVector& ProjectileWorldLocation, const FVector& HomingDesiredDir, bool bHomingDesiredDirValid) const;
 	FVector ApplyGlobalMicroWobbleToDelta(const FVector& InDelta, float ElapsedTime) const;
+
+	FVector ApplyHomingToDelta(const FVector& Delta, const FVector& ProjectileLoc, float DeltaTime, float ElapsedTime, const FVector& HomingDesiredDir, bool bHomingDesiredDirValid) const;
+
+	bool TryGetHomingTargetLocation(FVector& OutLocation) const;
+
+	void DrawDebugHomingGhostIfNeeded() const;
+
+	void ApplyOrientToVelocityIfNeeded(AActor* OwnerActor, const FVector& Delta) const;
 
 	UFUNCTION()
 	void OnRootComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
